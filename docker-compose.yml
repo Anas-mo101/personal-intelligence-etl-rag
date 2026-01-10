@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # neo4j:
+  #   image: neo4j:5.11.0
+  #   container_name: graphrag_neo4j
+  #   ports:
+  #     - "7474:7474" # HTTP
+  #     - "7687:7687" # Bolt
+  #   environment:
+  #     - NEO4J_AUTH=neo4j/password
+  #     - NEO4J_PLUGINS=["apoc"]
+  #     - NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*
+  #     - NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*
+  #   volumes:
+  #     - ./data/neo4j:/data
+  #     - ./logs/neo4j:/logs
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:7474"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: graphrag_redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - ./data/redis:/data
+  #   command: ["redis-server", "--appendonly", "yes"]
+
+  db:
+    image: postgres:17
+    restart: always
+    command: -p 6432 -c log_hostname=off
+    ports:
+      - 6432:6432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    volumes:
+      - ./:/app
+    tty: true
+    ports:
+      - '8050:8050'
+    environment:
+      DB_URI: postgresql://postgres:postgres@app-db:6432/app_db
+      REDIS_URI: redis://@app-redis:7379
+      PORT: 8050
+      JWT_SECRET: supersecret
+      USE_SQLITE_DB: false
+      DEBUG: false
+      BACKEND_SERVER_NAME: 192.168.8.127:8050
+      BACKEND_SERVER_URL: http://192.168.8.127:8050
+      SKIP_IF_ALREADY_RUN: true
+      NODE_ENV: dev
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: 6432
+      DB_DATABASE: app_db
+    env_file:
+      - .env
+    depends_on:
+      - app-db
+      - app-redis
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+          ignore: 
+            - node_modules/
+
+  # worker:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: graphrag_worker
+  #   command: ["npm", "run", "worker"]
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #     - NEO4J_URI=bolt://neo4j:7687
+  #     - NEO4J_USER=neo4j
+  #     - NEO4J_PASSWORD=password
+  #     - LLM_API_KEY=${LLM_API_KEY}
+  #   depends_on:
+  #     - redis
+  #     - neo4j

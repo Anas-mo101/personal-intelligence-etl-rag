@@ -1,0 +1,7 @@
+/dist
+/node_modules
+/data
+/temp
+
+package-lock.json
+.env

@@ -1,0 +1,59 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Setting {
+  id        Int      @id @unique @default(autoincrement())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now()) @db.Timestamptz
+}
+
+// 1. Core Target Person
+model Person {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  channels ExtractionChannel[]
+  facts    PersonFact[]
+}
+
+model PersonFact {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       String
+  key        String   @unique
+  value      String
+  isVerified Boolean  @default(false)
+  personId   String
+  person     Person   @relation(fields: [personId], references: [id])
+}
+
+model ExtractionChannel {
+  id           String     @id @default(uuid())
+  personId     String
+  person       Person     @relation(fields: [personId], references: [id])
+  sourceType   SourceType 
+  lastSyncedAt DateTime?
+  isActive     Boolean    @default(true)
+}
+
+enum SourceType {
+  TXT
+  PDF
+  FACEBOOK
+  INSTAGRAM
+  X
+  WEB_SCRAPER
+  IMAGE
+  YOUTUBE
+  VIDEO
+  AUDIO
+}
