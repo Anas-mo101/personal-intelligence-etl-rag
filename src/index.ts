@@ -4,9 +4,24 @@ import loader from "./loaders"
 import LoggerFactory from "./utils/logger/factory";
 import { getHost } from "./utils/host";
 
+import * as Extractor from "./workers/ExtractorWorker";
+import * as Ingestor from "./workers/IngestWorker";
 
 (async () => {
     const logger = LoggerFactory.getLogger();
+
+    if(process.env.WORKER === "true"){
+        await loader.initWorker();
+
+        if(process.env.EXTRACTOR_WORKER === "true"){
+            Extractor.initExtractor();
+        } else {
+            Ingestor.initInjestor();
+        }
+
+        return;
+    }
+
 
     const app: Application = express();
 

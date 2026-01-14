@@ -1,11 +1,13 @@
 import AppError from "../../error/AppError";
 import prisma from "../../database";
-import { Person } from "@prisma/client";
+import { PersonWithInfo } from "../../types";
 
-const ShowPersonService = async (id: string): Promise<Person> => {
+const ShowPersonService = async (id: string): Promise<PersonWithInfo> => {
   const person = await prisma.person.findUnique({
-    where: {
-      id
+    where: { id },
+    include: {
+      facts: true,
+      channels: true
     }
   });
 

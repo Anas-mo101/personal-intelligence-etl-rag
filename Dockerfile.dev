@@ -15,4 +15,4 @@ COPY src/ ./src/
 
 EXPOSE 8050
 
-CMD ["dockerize", "-wait", "tcp://db:6432", "/bin/bash","-c","chmod +x ./scripts/entrypoint.dev.sh && ./scripts/entrypoint.dev.sh"]
+CMD [ "dockerize",  "-wait", "tcp://db:6432", "/bin/bash",  "-c", "chmod +x ./scripts/entrypoint.dev.sh && ./scripts/entrypoint.dev.sh $WORKER"]

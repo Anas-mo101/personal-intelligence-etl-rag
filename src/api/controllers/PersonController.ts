@@ -31,7 +31,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
-  const person = await ShowPersonService(id);
+  const person = await ShowPersonService(`${id}`);
 
   return res.status(200).json(person);
 };
@@ -40,14 +40,14 @@ export const update = async (req: Request, res: Response): Promise<Response> => 
   const { id } = req.params;
   const data = req.body;
 
-  const person = await UpdatePersonService({ data, id: id });
+  const person = await UpdatePersonService({ data, id: `${id}` });
 
   return res.status(200).json(person);
 };
 
 export const remove = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
-  await DeletePersonService(id);
+  await DeletePersonService(`${id}`);
 
   return res.status(200).json({ message: "Person deleted" });
 };

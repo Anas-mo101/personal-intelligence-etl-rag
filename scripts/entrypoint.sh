@@ -6,12 +6,14 @@
 #   3) Starts the production server
 # --------------------------------------------------
 
-echo "==> Running DB migrations..." 
-npx prisma generate
-npx prisma db push
+if [ $1 != "true" ]; then
+    echo "==> Running DB migrations..." 
+    npx prisma generate
+    npx prisma db push
 
-echo "==> Seeding the DB (skipping if already run)..."
-npx prisma db seed
+    echo "==> Seeding the DB (skipping if already run)..."
+    npx prisma db seed
+fi
 
 echo "==> Starting the production server..."
 npm run start:prod

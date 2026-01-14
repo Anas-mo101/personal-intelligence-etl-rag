@@ -31,7 +31,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
-  const extractionchannel = await ShowExtractionChannelService(id);
+  const extractionchannel = await ShowExtractionChannelService(`${id}`);
 
   return res.status(200).json(extractionchannel);
 };
@@ -40,14 +40,18 @@ export const update = async (req: Request, res: Response): Promise<Response> => 
   const { id } = req.params;
   const data = req.body;
 
-  const extractionchannel = await UpdateExtractionChannelService({ data, id: id });
+  const extractionchannel = await UpdateExtractionChannelService({
+    data,
+    id: `${id}`
+  });
 
   return res.status(200).json(extractionchannel);
 };
 
 export const remove = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
-  await DeleteExtractionChannelService(id);
+
+  await DeleteExtractionChannelService(`${id}`);
 
   return res.status(200).json({ message: "ExtractionChannel deleted" });
 };

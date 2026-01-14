@@ -1,0 +1,6 @@
+data/
+node_modules/
+.git/
+redis/
+storage/
+ollama_data/

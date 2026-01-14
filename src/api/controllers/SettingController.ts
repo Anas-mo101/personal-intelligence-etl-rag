@@ -30,7 +30,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
-  const setting = await ShowSettingService(id);
+  const setting = await ShowSettingService(+id);
 
   return res.status(200).json(setting);
 };
@@ -39,14 +39,14 @@ export const update = async (req: Request, res: Response): Promise<Response> => 
   const { id } = req.params;
   const data = req.body;
 
-  const setting = await UpdateSettingService({ data, id: id });
+  const setting = await UpdateSettingService({ data, id: +id });
 
   return res.status(200).json(setting);
 };
 
 export const remove = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
-  await DeleteSettingService(id);
+  await DeleteSettingService(+id);
 
   return res.status(200).json({ message: "Setting deleted" });
 };

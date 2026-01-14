@@ -6,12 +6,15 @@
 #   3) Starts the development server
 # --------------------------------------------------
 
-echo "==> Running DB migrations..." 
-npx prisma generate
-npx prisma db push
+if [ $1 != "true" ]; then
+    echo "==> Running DB migrations..." 
+    npm run prisma:generate
+    npm run prisma:push
+    
 
-echo "==> Seeding the DB (skipping if already run)..."
-npx prisma db seed
+    echo "==> Seeding the DB (skipping if already run)..."
+    npm run prisma:seed
+fi
 
 echo "==> Starting the development server..."
 npm run dev

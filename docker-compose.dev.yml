@@ -21,14 +21,13 @@ services:
   #     timeout: 5s
   #     retries: 5
 
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: graphrag_redis
-  #   ports:
-  #     - "6379:6379"
-  #   volumes:
-  #     - ./data/redis:/data
-  #   command: ["redis-server", "--appendonly", "yes"]
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "7379:7379"
+    volumes:
+      - ./redis:/data
+    command: ["redis-server", "--port", "7379", "--appendonly", "yes"]
 
   db:
     image: postgres:17
@@ -54,17 +53,21 @@ services:
     ports:
       - '8050:8050'
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@app-db:6432/app_db
-      REDIS_URI: redis://@app-redis:7379
+      DATABASE_URL: postgresql://postgres:postgres@db:6432/app_db
+      REDIS_URI: redis://@redis:7379
       PORT: 8050
       BACKEND_SERVER_NAME: 192.168.8.127:8050
       BACKEND_SERVER_URL: http://192.168.8.127:8050
       NODE_ENV: dev
+      WORKER: false
+      MINIO_BUCKET_NAME: pi
     restart: always
     env_file:
       - .env
     depends_on:
       - db
+      - redis
+      - minio
     develop:
       watch:
         - action: rebuild
@@ -72,19 +75,76 @@ services:
           ignore: 
             - node_modules/
 
-  # worker:
-  #   build: 
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: graphrag_worker
-  #   command: ["npm", "run", "worker"]
-  #   environment:
-  #     - REDIS_HOST=redis
-  #     - REDIS_PORT=6379
-  #     - NEO4J_URI=bolt://neo4j:7687
-  #     - NEO4J_USER=neo4j
-  #     - NEO4J_PASSWORD=password
-  #     - LLM_API_KEY=${LLM_API_KEY}
-  #   depends_on:
-  #     - redis
-  #     - neo4j
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./storage:/data
+
+  in-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:6432/app_db
+      REDIS_URI: redis://@redis:7379
+      NODE_ENV: dev
+      WORKER: true
+      EXTRACTOR_WORKER: false
+      MINIO_BUCKET_NAME: pi
+    depends_on:
+      - db
+      - redis
+      - minio
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+          ignore: 
+            - node_modules/
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      -./ollama_data:/root/.ollama
+    entrypoint: /bin/sh
+    command: 
+      - "-c" 
+      - |
+        ollama serve & 
+        sleep 5
+        ollama pull llama3.1
+        wait
+
+  ex-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:6432/app_db
+      REDIS_URI: redis://@redis:7379
+      NODE_ENV: dev
+      WORKER: true
+      EXTRACTOR_WORKER: true
+      MINIO_BUCKET_NAME: pi
+    depends_on:
+      - db
+      - redis
+      - minio
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+          ignore: 
+            - node_modules/

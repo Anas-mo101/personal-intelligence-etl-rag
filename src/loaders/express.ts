@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rTracer from 'cls-rtracer';
 import "express-async-errors";
-import { Application, Response, Error, NextFunction, json, urlencoded } from 'express';
+import { Application, Response, Request, NextFunction, json, urlencoded } from 'express';
 import * as HTTP_STATUS from 'http-status';
 import LoggerFactory from "../utils/logger/factory";
 import AppError from '../error/AppError';

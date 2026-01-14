@@ -17,11 +17,11 @@ model Setting {
 
 // 1. Core Target Person
 model Person {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  channels ExtractionChannel[]
-  facts    PersonFact[]
+  id        String              @id @default(uuid())
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  channels  ExtractionChannel[]
+  facts     PersonFact[]
 }
 
 model PersonFact {
@@ -40,9 +40,11 @@ model ExtractionChannel {
   id           String     @id @default(uuid())
   personId     String
   person       Person     @relation(fields: [personId], references: [id])
-  sourceType   SourceType 
+  sourceType   SourceType
+  value        String
   lastSyncedAt DateTime?
   isActive     Boolean    @default(true)
+  isBlob       Boolean    @default(false)
 }
 
 enum SourceType {
