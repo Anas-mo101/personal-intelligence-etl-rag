@@ -7,7 +7,7 @@ export type StoreExtractionChannel = {
   personId: string;
   sourceType: SourceType;
   lastSyncedAt?: Date;
-  isActive: boolean;
+  isActive?: boolean;
   value: string;
   isBlob: boolean
 }[];

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { SOURCE_TYPES } from "../types";
 
-export const ExtractorSchema = z.object({
+export const IngestionSchema = z.object({
   entities: z.array(
     z.object({
       id: z.string().describe("A unique, normalized identifier for the entity (e.g., 'john-doe', 'london-uk'). Use kebab-case."),

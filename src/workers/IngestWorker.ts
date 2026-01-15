@@ -2,6 +2,11 @@ import { Worker, Job, QueueEvents } from 'bullmq';
 import redisLoader from '../loaders/redis';
 import LoggerFactory from "../utils/logger/factory";
 import { IIngestionJob } from '../types';
+import { InjestorService } from '../services/LlmServices/InjestorService';
+import StorePersonFactsService from '../services/PersonfactServices/StorePersonFactsService';
+import StoreExtractionChannelsService, { StoreExtractionChannel } from '../services/ExtractionChannelServices/StoreExtractionChannelsService';
+import { StoreToGraphService } from '../services/GraphServices/StoreToGraphService';
+import { GenerateEmbeddingsService } from '../services/LlmServices/EmbeddingService';
 
 export const initInjestor = () => {
     const logger = LoggerFactory.getLogger();
@@ -11,11 +16,32 @@ export const initInjestor = () => {
         async (job: Job<IIngestionJob>) => {
             const { data } = job;
 
-            /// channels
-            /// facts
-            /// graph relations
-            /// embedings
+            const injested = await InjestorService(data.chunk);
 
+            const channels = injested.channels.map((c) => {
+                return {
+                    ...c,
+                    personId: data.personId,
+                }
+            });
+
+            const facts = injested.facts.map((f) => {
+                return {
+                    ...f,
+                    key: f.name.toLowerCase().replace("", "-"),
+                    isVerified: false,
+                    personId: data.personId,
+                }
+            });
+
+            /// gen embedings for chunk to save in vector
+            const embedding = await GenerateEmbeddingsService(data.chunk);
+
+            await Promise.all([
+                StorePersonFactsService(facts),
+                StoreExtractionChannelsService(channels),
+                StoreToGraphService(injested.entities, injested.relationships, embedding, data.chunk)
+            ])
         },
         {
             connection: redisLoader.getRedis(),

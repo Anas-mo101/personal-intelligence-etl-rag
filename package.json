@@ -27,6 +27,8 @@
         "typescript": "^5.9.3"
     },
     "dependencies": {
+        "@huggingface/transformers": "^3.8.1",
+        "@instructor-ai/instructor": "^1.7.0",
         "@namatery/multer-minio": "^1.1.2",
         "@prisma/adapter-pg": "^7.2.0",
         "@prisma/client": "^6.19.1",
@@ -47,6 +49,8 @@
         "minio": "^8.0.6",
         "morgan": "^1.10.1",
         "multer": "^2.0.2",
+        "neo4j-driver": "^6.0.1",
+        "openai": "^6.16.0",
         "pg": "^8.16.3",
         "pino": "^10.1.0",
         "pino-pretty": "^13.1.3",

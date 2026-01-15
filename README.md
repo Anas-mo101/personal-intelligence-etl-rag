@@ -5,7 +5,7 @@
 [![Neo4j](https://img.shields.io/badge/GraphDB-Neo4j-008CC1.svg)](https://neo4j.com/)
 [![Redis](https://img.shields.io/badge/Queue-BullMQ-FF4438.svg)](https://bullmq.io/)
 
-A high-performance, open-source ETL pipeline designed to ingest unstructured personal data (emails, calendar events, PDFs) and transform it into a **Knowledge Graph** for advanced Retrieval-Augmented Generation (RAG).
+Open-source ETL pipeline designed to ingest unstructured personal data (text, social media, videos, images, PDFs) and transform it into a **Knowledge Graph** for advanced Retrieval-Augmented Generation (RAG).
 
 ---
 
