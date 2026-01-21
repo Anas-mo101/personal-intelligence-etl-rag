@@ -1,8 +1,6 @@
 import pino, { Logger } from "pino";
 import config from "../../config/logger";
 import AppError from "../../error/AppError";
-import {getRotationStream} from "./rotation";
-import httpStatus from "http-status";
 
 export const LOG_LEVELS = {
   TRACE: 'trace',
@@ -64,7 +62,7 @@ class LoggerFactory {
     const logger = this.getLogger();
 
     if (!logger) {
-      throw new AppError(httpStatus.INTERNAL_SERVER_ERROR ,"LOGGER_NOT_INIT");
+      throw new AppError(400 ,"LOGGER_NOT_INIT");
     }
 
     return logger.child(bindings);

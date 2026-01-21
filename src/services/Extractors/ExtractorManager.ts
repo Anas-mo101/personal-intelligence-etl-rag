@@ -1,4 +1,3 @@
-import httpStatus from "http-status";
 import AppError from "../../error/AppError";
 import { IExtractorManagerJob, ISourceType } from "../../types";
 import { IExtractor } from "./BaseExtractor";
@@ -14,7 +13,7 @@ export class ExtractorManager {
 
         if (!adapter){
             throw new AppError(
-                httpStatus.BAD_REQUEST,
+                400,
                 "NO_ADAPTER_FOUND",
                 `No adapter found for ${sourceType}`
             )

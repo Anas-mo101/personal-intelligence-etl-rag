@@ -2,10 +2,10 @@ import AppError from "../../error/AppError";
 import prisma from "../../database";
 import { Setting } from "@prisma/client";
 
-const ShowSettingService = async (id: number): Promise<Setting> => {
+const ShowSettingService = async (key: string): Promise<Setting> => {
   const setting = await prisma.setting.findUnique({
     where: {
-      id
+      key
     }
   });
 

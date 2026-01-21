@@ -5,6 +5,7 @@
 /storage
 /redis
 /ollama_data
+/neo4j
 
 package-lock.json
 .env

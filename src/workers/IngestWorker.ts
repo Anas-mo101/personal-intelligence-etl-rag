@@ -34,13 +34,18 @@ export const initInjestor = () => {
                 }
             });
 
-            /// gen embedings for chunk to save in vector
             const embedding = await GenerateEmbeddingsService(data.chunk);
 
             await Promise.all([
                 StorePersonFactsService(facts),
                 StoreExtractionChannelsService(channels),
-                StoreToGraphService(injested.entities, injested.relationships, embedding, data.chunk)
+                StoreToGraphService(
+                    data.personId,
+                    injested.entities,
+                    injested.relationships,
+                    embedding,
+                    data.chunk
+                )
             ])
         },
         {

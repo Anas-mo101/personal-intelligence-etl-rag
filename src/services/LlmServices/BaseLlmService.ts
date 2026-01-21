@@ -8,9 +8,10 @@ const oai = new OpenAI({
 
 const instructorClient = Instructor({
   client: oai,
-  mode: "JSON", 
+  mode: "JSON",
 });
 
 export {
-    instructorClient
+  oai,
+  instructorClient
 }

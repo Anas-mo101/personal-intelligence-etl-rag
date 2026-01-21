@@ -1,9 +1,11 @@
+import type { FeatureExtractionPipeline } from "@huggingface/transformers" with { "resolution-mode": "import" };
+
 
 class EmbeddingPipeline {
     static model = 'Xenova/all-MiniLM-L6-v2'; /// 384 dimensions
-    static instance: any = null;
+    static instance: FeatureExtractionPipeline | null = null; 
 
-    static async getInstance() {
+    static async getInstance(): Promise<FeatureExtractionPipeline> {
         if (this.instance === null) {
             const { pipeline } = await import("@huggingface/transformers")
 
@@ -17,13 +19,11 @@ export const GenerateEmbeddingsService = async (text: string): Promise<number[]>
     try {
         const extractor = await EmbeddingPipeline.getInstance();
     
-        // Generate the embedding (raw tensor)
         const output = await extractor(text, { 
             pooling: 'mean', 
             normalize: true 
         });
     
-        // Convert the tensor to a standard JavaScript array
         return Array.from(output.data);
     } catch (error) {
         throw new Error(`Embedding failed: ${error}`);

@@ -14,6 +14,7 @@ interface GraphRelationships {
 };
 
 export const StoreToGraphService = async (
+    personId: string,
     entities: GraphEntity[],
     relationships: GraphRelationships[],
     embedding: number[],
@@ -24,7 +25,10 @@ export const StoreToGraphService = async (
         await session.run(`
             MERGE (c:Chunk {textHash: apoc.util.sha1([$text])})
             SET c.text = $text, c.embedding = $embedding
-        `, { text: raw, embedding });
+        `, {
+            text: raw,
+            embedding
+        });
 
         // B. Upsert Entities
         for (const ent of entities) {

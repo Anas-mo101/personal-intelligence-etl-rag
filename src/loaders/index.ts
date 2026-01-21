@@ -1,5 +1,4 @@
 import { Application } from 'express';
-import expressLoader from './express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { initRedis } from './redis';
@@ -14,7 +13,7 @@ const init = async ({ expressApp }: { expressApp: Application }) => {
     }
 
     await initRedis();
-    await expressLoader({ app: expressApp });
+    // await expressLoader({ app: expressApp });
 };
 
 const initWorker = async () => {
